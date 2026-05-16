@@ -1,8 +1,14 @@
-# Arvin & Benet Pet POV Landing
+# On už vie, kde je dobre
 
-Interaktívna landing page pre kampaň **„On už vie, kde je dobre.“**
+Interaktívna landing page pre kampaň Arvin & Benet **„On už vie, kde je dobre.“**
 
-Stránka prezentuje prémiové bývanie očami psa, mačky a rybičky. Obsahuje výber zvieratka, interaktívnu obhliadku miestností, klikateľné anotácie, mapu bytu, lokálne 360 vizuály a responzívny layout pripravený na nasadenie.
+Live verzia:
+
+```text
+https://flamia-sofia.github.io/on-uz-vie-kde-je-dobre/
+```
+
+Stránka prezentuje prémiové bývanie očami psa, mačky a rybičky. Obsahuje výber zvieratka, interaktívnu obhliadku miestností, klikateľné anotácie, mapu bytu, lokálne 360 vizuály a responzívny layout pripravený na verejné nasadenie.
 
 ## Stack
 
@@ -34,9 +40,21 @@ npm run preview
 
 Build výstup sa vytvorí v priečinku `dist/`.
 
+## GitHub Pages
+
+Verejná verzia je publikovaná z vetvy `main`, priečinok `docs/`.
+
+Pri ďalších produkčných zmenách:
+
+```bash
+npm run build
+```
+
+Potom preneste obsah z `dist/` do `docs/`, commitnite a pushnite na `main`.
+
 ## 360 vizuály
 
-Produkčné panoramatické vizuály sú uložené v:
+Panoramatické vizuály sú uložené v:
 
 ```text
 public/tour/
@@ -55,14 +73,4 @@ Miestnosti, anotácie a asset cesty sú definované v:
 
 ```text
 src/data/tourData.js
-```
-
-## Deployment
-
-Projekt je pripravený pre GitHub, Vercel, Netlify alebo GitHub Pages. Vite konfigurácia používa relatívny `base`, takže build funguje aj pri nasadení pod repozitárovým subpathom.
-
-Pre statický hosting stačí publikovať obsah priečinka:
-
-```text
-dist/
 ```
