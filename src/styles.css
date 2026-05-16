@@ -1,0 +1,150 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color: #201f1c;
+  background: #f7f1e7;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  overflow-x: hidden;
+  background:
+    radial-gradient(circle at top left, rgba(201, 154, 46, 0.14), transparent 28rem),
+    linear-gradient(180deg, #f7f1e7 0%, #efe4d4 100%);
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid #c99a2e;
+  outline-offset: 3px;
+}
+
+.premium-container {
+  width: min(1180px, calc(100% - 32px));
+  margin-inline: auto;
+}
+
+.scene-panorama {
+  background-position: center;
+  background-size: cover;
+  transition: opacity 520ms ease, transform 520ms ease;
+  will-change: background-position;
+}
+
+.scene-panorama[data-direction="90"] {
+  background-position: 62% center;
+}
+
+.scene-panorama[data-direction="180"] {
+  background-position: right center;
+}
+
+.scene-panorama[data-direction="270"] {
+  background-position: 38% center;
+}
+
+.tour-shell.fixed {
+  width: 100vw;
+  height: 100vh;
+  height: 100svh;
+  max-width: none;
+  border: 0;
+  border-radius: 0;
+}
+
+.tour-shell.fixed .tour-layout {
+  position: relative;
+  display: block;
+  height: 100%;
+  min-height: 0;
+}
+
+.tour-shell.fixed .tour-scene {
+  width: 100vw;
+  height: 100vh;
+  height: 100svh;
+  min-height: 100vh;
+  min-height: 100svh;
+}
+
+.tour-shell.fixed .tour-detail {
+  display: none;
+}
+
+.tour-scene--immersive .scene-panorama {
+  background-size: auto 100% !important;
+}
+
+.tour-angle-slider {
+  position: relative;
+  display: block;
+  height: 1.5rem;
+  cursor: pointer;
+  touch-action: none;
+}
+
+.tour-angle-slider::before {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  left: 0;
+  height: 0.35rem;
+  content: "";
+  transform: translateY(-50%);
+  border-radius: 999px;
+  background: rgba(247, 241, 231, 0.26);
+}
+
+.tour-angle-slider__fill {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  height: 0.35rem;
+  transform: translateY(-50%);
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(201, 154, 46, 0.95), rgba(247, 241, 231, 0.34));
+}
+
+.tour-angle-slider__thumb {
+  position: absolute;
+  top: 50%;
+  width: 1.25rem;
+  height: 1.25rem;
+  transform: translate(-50%, -50%);
+  border: 2px solid #f7f1e7;
+  border-radius: 999px;
+  background: #c99a2e;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.24);
+}
+
+.tour-angle-slider:focus-visible {
+  outline: 2px solid #c99a2e;
+  outline-offset: 0.45rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
