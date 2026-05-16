@@ -22,6 +22,7 @@ export default function Annotation({
       transition={{ duration: 0.12 }}
       onPointerDown={(event) => event.stopPropagation()}
       onClick={handleClick}
+      data-annotation-id={annotation.id}
       aria-label={`Hotspot anotácie ${annotation.title}`}
       className="absolute z-20 flex -translate-x-1/2 -translate-y-1/2 items-center gap-2 text-left"
       style={{ left: `${position.x}%`, top: `${position.y}%` }}

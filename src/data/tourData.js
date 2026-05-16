@@ -137,8 +137,8 @@ export const roomNavigationHotspots = {
       targetRoomId: "kitchen",
       label: "Dvere do kuchyne",
       direction: 0,
-      x: 77,
-      y: 61,
+      x: 20,
+      y: 55,
       arrivalAngle: 270,
     },
     {
@@ -146,8 +146,8 @@ export const roomNavigationHotspots = {
       targetRoomId: "terrace",
       label: "Na terasu",
       direction: 0,
-      x: 22,
-      y: 46,
+      x: 66,
+      y: 47,
       arrivalAngle: 180,
     },
     {
@@ -155,8 +155,8 @@ export const roomNavigationHotspots = {
       targetRoomId: "hall",
       label: "Do haly",
       direction: 0,
-      x: 80,
-      y: 42,
+      x: 95,
+      y: 55,
       arrivalAngle: 0,
     },
   ],
@@ -166,8 +166,8 @@ export const roomNavigationHotspots = {
       targetRoomId: "living",
       label: "Späť do obývačky",
       direction: 270,
-      x: 23,
-      y: 54,
+      x: 31,
+      y: 52,
       arrivalAngle: 90,
     },
     {
@@ -175,8 +175,8 @@ export const roomNavigationHotspots = {
       targetRoomId: "hall",
       label: "Do haly",
       direction: 0,
-      x: 66,
-      y: 45,
+      x: 70,
+      y: 48,
       arrivalAngle: 90,
     },
   ],
@@ -186,8 +186,8 @@ export const roomNavigationHotspots = {
       targetRoomId: "living",
       label: "Späť do obývačky",
       direction: 180,
-      x: 68,
-      y: 56,
+      x: 7,
+      y: 50,
       arrivalAngle: 0,
     },
   ],
@@ -197,8 +197,8 @@ export const roomNavigationHotspots = {
       targetRoomId: "hall",
       label: "Do haly",
       direction: 180,
-      x: 72,
-      y: 50,
+      x: 4,
+      y: 51,
       arrivalAngle: 180,
     },
     {
@@ -206,8 +206,8 @@ export const roomNavigationHotspots = {
       targetRoomId: "bathroom",
       label: "Do kúpeľne",
       direction: 90,
-      x: 84,
-      y: 56,
+      x: 32,
+      y: 49,
       arrivalAngle: 270,
     },
   ],
@@ -217,8 +217,8 @@ export const roomNavigationHotspots = {
       targetRoomId: "hall",
       label: "Do haly",
       direction: 180,
-      x: 30,
-      y: 56,
+      x: 13,
+      y: 52,
       arrivalAngle: 180,
     },
     {
@@ -226,7 +226,7 @@ export const roomNavigationHotspots = {
       targetRoomId: "bedroom",
       label: "Do spálne",
       direction: 0,
-      x: 72,
+      x: 89,
       y: 52,
       arrivalAngle: 90,
     },
@@ -237,8 +237,8 @@ export const roomNavigationHotspots = {
       targetRoomId: "living",
       label: "Do obývačky",
       direction: 0,
-      x: 34,
-      y: 42,
+      x: 5,
+      y: 52,
       arrivalAngle: 0,
     },
     {
@@ -246,8 +246,8 @@ export const roomNavigationHotspots = {
       targetRoomId: "kitchen",
       label: "Do kuchyne",
       direction: 90,
-      x: 64,
-      y: 40,
+      x: 30,
+      y: 50,
       arrivalAngle: 0,
     },
     {
@@ -255,8 +255,8 @@ export const roomNavigationHotspots = {
       targetRoomId: "bedroom",
       label: "Do spálne",
       direction: 180,
-      x: 45,
-      y: 68,
+      x: 80,
+      y: 51,
       arrivalAngle: 0,
     },
     {
@@ -265,7 +265,7 @@ export const roomNavigationHotspots = {
       label: "Do kúpeľne",
       direction: 180,
       x: 72,
-      y: 68,
+      y: 51,
       arrivalAngle: 0,
     },
   ],
@@ -279,8 +279,8 @@ export const annotations = {
         title: "Ranné slnko na leňošenie",
         detail:
           "Svetlo dopadá tam, kde sa dá robiť nič s maximálnou vážnosťou. Presne takto sa pozná dobrá denná zóna.",
-        x: 24,
-        y: 38,
+        x: 62,
+        y: 44,
         direction: 0,
       },
       {
@@ -288,8 +288,8 @@ export const annotations = {
         title: "Mäkký koberec na oddych",
         detail:
           "Koberec drží obývačku útulnú, tichú a pripravenú na dlhé poobedie pri nohách gauča.",
-        x: 52,
-        y: 69,
+        x: 58,
+        y: 76,
         direction: 0,
       },
       {
@@ -297,8 +297,8 @@ export const annotations = {
         title: "Perfektný kút na stráženie domácnosti",
         detail:
           "Z jedného miesta vidno sedačku, terasu aj chodbu. Bezpečnostný systém s chvostom by to schválil.",
-        x: 73,
-        y: 47,
+        x: 95,
+        y: 55,
         direction: 90,
       },
     ],
@@ -308,7 +308,7 @@ export const annotations = {
         title: "Zóna, kde občas niečo spadne",
         detail:
           "Kuchyňa je praktická pre ľudí a mimoriadne zaujímavá pre každého, kto pozná zvuk padajúcej mrkvy.",
-        x: 42,
+        x: 50,
         y: 56,
         direction: 0,
       },
@@ -317,8 +317,8 @@ export const annotations = {
         title: "Strategické miesto pre misku",
         detail:
           "Nenápadný roh pri linke necháva jedálenský priestor čistý, ale misku stále v centre diania.",
-        x: 70,
-        y: 72,
+        x: 88,
+        y: 70,
         direction: 90,
       },
     ],
@@ -329,7 +329,7 @@ export const annotations = {
         detail:
           "Terasa predlžuje obývačku smerom k mestu. Je dosť veľká na pokoj, rastliny aj nenápadný dohľad.",
         x: 50,
-        y: 36,
+        y: 42,
         direction: 0,
       },
       {
@@ -337,8 +337,8 @@ export const annotations = {
         title: "Veľa priestoru na behanie",
         detail:
           "Pohyb medzi interiérom a exteriérom pôsobí prirodzene, bez úzkych miest a zbytočného zakopávania.",
-        x: 68,
-        y: 67,
+        x: 67,
+        y: 70,
         direction: 90,
       },
     ],
@@ -348,8 +348,8 @@ export const annotations = {
         title: "Posteľ, na ktorú určite nesmiem",
         detail:
           "Spálňa je pokojná, mäkká a veľmi presvedčivo tvrdí, že posteľ patrí iba ľuďom. Uvidíme.",
-        x: 48,
-        y: 55,
+        x: 52,
+        y: 57,
         direction: 0,
       },
       {
@@ -357,8 +357,8 @@ export const annotations = {
         title: "Mäkký koberec na oddych",
         detail:
           "Tichý roh pri posteli funguje ako večerné stanovisko bez toho, aby narušil čistý charakter spálne.",
-        x: 24,
-        y: 70,
+        x: 42,
+        y: 76,
         direction: 270,
       },
     ],
@@ -368,8 +368,8 @@ export const annotations = {
         title: "Ranné slnko na leňošenie",
         detail:
           "Aj kúpeľňa má príjemné svetlo a teplý povrch. Nie je to len technická miestnosť, ale malý rituál.",
-        x: 34,
-        y: 44,
+        x: 58,
+        y: 74,
         direction: 0,
       },
       {
@@ -377,8 +377,8 @@ export const annotations = {
         title: "Kontrola každého príchodu",
         detail:
           "Dvere sú v zornom poli, takže nikto nezmizne bez oficiálneho sprievodu.",
-        x: 72,
-        y: 48,
+        x: 13,
+        y: 52,
         direction: 180,
       },
     ],
@@ -388,8 +388,8 @@ export const annotations = {
         title: "Kontrola každého príchodu",
         detail:
           "Vstupná hala má jasný prehľad o dverách aj pohybe domácnosti. Prvý dojem je pokojný, nie stiesnený.",
-        x: 36,
-        y: 42,
+        x: 50,
+        y: 48,
         direction: 0,
       },
       {
@@ -397,8 +397,8 @@ export const annotations = {
         title: "Perfektný kút na stráženie domácnosti",
         detail:
           "Odtiaľto sa dá vyhodnotiť návšteva, kuriér aj návrat z práce ešte pred odložením kľúčov.",
-        x: 62,
-        y: 62,
+        x: 30,
+        y: 56,
         direction: 90,
       },
     ],
@@ -410,8 +410,8 @@ export const annotations = {
         title: "Parapet na kontrolu holubov a susedov",
         detail:
           "Výška, svetlo a výhľad tvoria plnohodnotné pozorovacie centrum. Bez potreby pýtať si súhlas.",
-        x: 29,
-        y: 34,
+        x: 62,
+        y: 44,
         direction: 0,
       },
       {
@@ -419,8 +419,8 @@ export const annotations = {
         title: "Luxusné škrabadlo prezlečené za gauč",
         detail:
           "Gauč je elegantný, mäkký a tvári sa ako dizajnový objekt. Mačka ho berie ako multifunkčné vybavenie.",
-        x: 58,
-        y: 55,
+        x: 47,
+        y: 57,
         direction: 90,
       },
       {
@@ -428,8 +428,8 @@ export const annotations = {
         title: "Mäkký koberec na 17. dnešný spánok",
         detail:
           "Akustika aj mäkkosť robia z obývačky miesto, kde sa dá zmiznúť bez toho, aby človek odišiel.",
-        x: 48,
-        y: 72,
+        x: 56,
+        y: 76,
         direction: 0,
       },
     ],
@@ -439,8 +439,8 @@ export const annotations = {
         title: "Linka, na ktorú oficiálne nesmiem",
         detail:
           "Pracovná plocha je čistá, veľkorysá a zjavne iba pre ľudí. To je informácia, nie pravidlo.",
-        x: 56,
-        y: 46,
+        x: 88,
+        y: 48,
         direction: 0,
       },
       {
@@ -448,8 +448,8 @@ export const annotations = {
         title: "Tichý kút na súdenie celej domácnosti",
         detail:
           "Kuchyňa ponúka ústup aj rozhľad, čo je ideálna kombinácia pre diskrétne hodnotenie večere.",
-        x: 26,
-        y: 63,
+        x: 63,
+        y: 55,
         direction: 270,
       },
     ],
@@ -459,7 +459,7 @@ export const annotations = {
         title: "Ranné slnko na profesionálne vyhrievanie",
         detail:
           "Terasa má presne ten typ svetla, pri ktorom sa deň začne bez slov a bez kompromisov.",
-        x: 38,
+        x: 31,
         y: 45,
         direction: 0,
       },
@@ -468,8 +468,8 @@ export const annotations = {
         title: "Dvere, pri ktorých sa rozhodujem, či chcem von",
         detail:
           "Prechod na terasu je prirodzený a pohodlný. Otázka, či ho použiť, zostáva otvorená.",
-        x: 67,
-        y: 57,
+        x: 7,
+        y: 50,
         direction: 180,
       },
     ],
@@ -480,7 +480,7 @@ export const annotations = {
         detail:
           "Spálňa drží pokojný hotelový tón. Posteľ je dominantná, mäkká a jej vlastníctvo je vec názoru.",
         x: 52,
-        y: 52,
+        y: 57,
         direction: 0,
       },
       {
@@ -488,8 +488,8 @@ export const annotations = {
         title: "Ranné slnko na profesionálne vyhrievanie",
         detail:
           "Ranné svetlo sa opiera o textílie tak jemne, že aj budík pôsobí menej osobne.",
-        x: 30,
-        y: 38,
+        x: 72,
+        y: 43,
         direction: 270,
       },
     ],
@@ -499,8 +499,8 @@ export const annotations = {
         title: "Ranné slnko na profesionálne vyhrievanie",
         detail:
           "Teplá dlažba a čisté línie robia kúpeľňu príjemnou aj pre niekoho, kto vodu berie osobne.",
-        x: 42,
-        y: 64,
+        x: 58,
+        y: 74,
         direction: 0,
       },
       {
@@ -508,8 +508,8 @@ export const annotations = {
         title: "Tichý kút na súdenie celej domácnosti",
         detail:
           "Nenápadné miesto pri dverách drží odstup, prehľad aj pocit, že všetko mohlo byť urobené lepšie.",
-        x: 72,
-        y: 50,
+        x: 13,
+        y: 52,
         direction: 180,
       },
     ],
@@ -519,7 +519,7 @@ export const annotations = {
         title: "Dvere, pri ktorých sa rozhodujem, či chcem von",
         detail:
           "Vstup je praktický, prehľadný a dostatočne dôstojný na päťminútové váhanie pred prahom.",
-        x: 34,
+        x: 50,
         y: 48,
         direction: 0,
       },
@@ -528,8 +528,8 @@ export const annotations = {
         title: "Tichý kút na súdenie celej domácnosti",
         detail:
           "Hala spája miestnosti bez chaosu. Z dobrého kúta sa dá sledovať takmer všetko.",
-        x: 62,
-        y: 58,
+        x: 30,
+        y: 56,
         direction: 90,
       },
     ],
@@ -541,8 +541,8 @@ export const annotations = {
         title: "Panoramatický výhľad na celé mesto",
         detail:
           "Z akvária vidno viac, než by jeden čakal. Byt má výhľad, ktorý pracuje aj v tichu.",
-        x: 47,
-        y: 29,
+        x: 66,
+        y: 42,
         direction: 0,
       },
       {
@@ -550,8 +550,8 @@ export const annotations = {
         title: "Náladové svetlo na večerné plutvenie",
         detail:
           "Večer sa obývačka zmení na pokojný salón. Svetlo nie je ostré, iba príjemne prítomné.",
-        x: 66,
-        y: 45,
+        x: 82,
+        y: 46,
         direction: 90,
       },
       {
@@ -559,8 +559,8 @@ export const annotations = {
         title: "Prémiové umiestnenie v centre diania",
         detail:
           "Akvárium nestojí bokom. Je tam, kde sa býva, rozpráva a občas prejde niekto s tanierom.",
-        x: 42,
-        y: 58,
+        x: 55,
+        y: 66,
         direction: 180,
       },
       {
@@ -568,8 +568,8 @@ export const annotations = {
         title: "Tichá zóna na pokojné ignorovanie okolia",
         detail:
           "Priestor okolo akvária má dosť pokoja na vlastný svet, aj keď byt prirodzene žije.",
-        x: 76,
-        y: 62,
+        x: 84,
+        y: 56,
         direction: 270,
       },
       {
@@ -577,8 +577,8 @@ export const annotations = {
         title: "Denné svetlo, ktoré robí show aj mne",
         detail:
           "Denné svetlo zvýrazní interiér aj hladinu. Všetko pôsobí jasne, mäkko a trochu filmovo.",
-        x: 25,
-        y: 48,
+        x: 62,
+        y: 43,
         direction: 0,
       },
       {
@@ -586,8 +586,8 @@ export const annotations = {
         title: "Výhľad na ľudí, ktorí stále niečo nosia",
         detail:
           "Obývačka má prirodzený pohyb, no nie nepokoj. Človek sa nestratí, rybička má program.",
-        x: 59,
-        y: 68,
+        x: 28,
+        y: 55,
         direction: 180,
       },
       {
@@ -595,8 +595,8 @@ export const annotations = {
         title: "Veľké nebo bez potreby opustiť vodu",
         detail:
           "Výška okien a otvorený výhľad robia z obývačky miesto, ktoré nepôsobí uzavreto.",
-        x: 32,
-        y: 24,
+        x: 64,
+        y: 26,
         direction: 270,
       },
       {
@@ -604,8 +604,8 @@ export const annotations = {
         title: "Posteľ pre personál po službe",
         detail:
           "Za dennou zónou je cítiť pokojný súkromný trakt. Personál si po kŕmení zaslúži regeneráciu.",
-        x: 70,
-        y: 35,
+        x: 95,
+        y: 55,
         direction: 90,
       },
     ],

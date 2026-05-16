@@ -13,7 +13,7 @@ import {
   Move,
   RotateCw,
 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Annotation from "./Annotation.jsx";
 import MiniMap from "./MiniMap.jsx";
 import {
@@ -24,16 +24,12 @@ import {
   roomNavigationHotspots,
 } from "../data/tourData.js";
 
-function getSceneBackground(room) {
-  if (room.scene.panoramaUrl) {
-    return `url("${room.scene.panoramaUrl}")`;
-  }
+const PANORAMA_ASPECT_RATIO = 1774 / 887;
+const STANDARD_PANORAMA_SCALE = 1.12;
+const IMMERSIVE_PANORAMA_SCALE = 1.72;
 
-  if (room.scene.imageUrl) {
-    return `url("${room.scene.imageUrl}")`;
-  }
-
-  return room.scene.fallback;
+function getSceneImage(room) {
+  return room.scene.panoramaUrl || room.scene.imageUrl || "";
 }
 
 function getDirectionIndex(direction) {
@@ -59,6 +55,10 @@ function getPanoramaPosition(angle) {
   return clamp((normalizeAngle(angle) / 359) * 100, 0, 100);
 }
 
+function getPanoramaProgress(angle) {
+  return getPanoramaPosition(angle) / 100;
+}
+
 function NavigationHotspot({ hotspot, position, onNavigate }) {
   function handleNavigate(event) {
     event.stopPropagation();
@@ -75,6 +75,7 @@ function NavigationHotspot({ hotspot, position, onNavigate }) {
       onPointerDown={(event) => event.stopPropagation()}
       onClick={handleNavigate}
       aria-label={hotspot.label}
+      data-navigation-hotspot-id={hotspot.id}
       className="absolute z-30 flex -translate-x-1/2 -translate-y-1/2 items-center gap-2 rounded-full border border-ivory/50 bg-charcoal/72 px-3 py-2 text-xs font-semibold text-ivory shadow-[0_16px_36px_rgba(0,0,0,0.28)] backdrop-blur transition hover:border-mustard hover:bg-mustard hover:text-charcoal sm:px-4 sm:text-sm"
       style={{ left: `${position.x}%`, top: `${position.y}%` }}
     >
@@ -88,10 +89,12 @@ function NavigationHotspot({ hotspot, position, onNavigate }) {
 }
 
 export default function VirtualTour({ selectedAnimal, currentRoom, currentRoomId, onRoomChange }) {
+  const sceneRef = useRef(null);
   const [viewAngle, setViewAngle] = useState(0);
   const [activeAnnotationId, setActiveAnnotationId] = useState(null);
   const [isImmersive, setIsImmersive] = useState(false);
   const [isSliderDragging, setIsSliderDragging] = useState(false);
+  const [sceneSize, setSceneSize] = useState({ width: 0, height: 0 });
 
   const canMove = selectedAnimal.canMove;
   const roomForAnimal = selectedAnimal.id === "fish" ? getRoomById(defaultRoomId) : currentRoom;
@@ -107,7 +110,7 @@ export default function VirtualTour({ selectedAnimal, currentRoom, currentRoomId
     return getAnnotations(selectedAnimal.id, roomId);
   }, [roomForAnimal.id, selectedAnimal.id]);
 
-  const projectedAnnotations = useMemo(
+  const anchoredAnnotations = useMemo(
     () =>
       allAnnotations.map((annotation, index) => ({
         annotation,
@@ -117,7 +120,7 @@ export default function VirtualTour({ selectedAnimal, currentRoom, currentRoomId
     [allAnnotations]
   );
 
-  const projectedNavigationHotspots = useMemo(
+  const anchoredNavigationHotspots = useMemo(
     () =>
       navigationHotspots.map((hotspot) => ({
         hotspot,
@@ -129,6 +132,10 @@ export default function VirtualTour({ selectedAnimal, currentRoom, currentRoomId
   const activeAnnotation =
     allAnnotations.find((annotation) => annotation.id === activeAnnotationId) ??
     allAnnotations[0];
+  const activeAnnotationIndex = Math.max(
+    allAnnotations.findIndex((annotation) => annotation.id === activeAnnotation?.id),
+    0
+  );
 
   useEffect(() => {
     if (selectedAnimal.id === "fish" && currentRoomId !== defaultRoomId) {
@@ -159,6 +166,36 @@ export default function VirtualTour({ selectedAnimal, currentRoom, currentRoomId
 
     return () => {
       document.body.style.overflow = "";
+    };
+  }, [isImmersive]);
+
+  useEffect(() => {
+    const node = sceneRef.current;
+    if (!node) return undefined;
+
+    function updateSceneSize() {
+      const rect = node.getBoundingClientRect();
+      setSceneSize({
+        width: Math.round(rect.width),
+        height: Math.round(rect.height),
+      });
+    }
+
+    updateSceneSize();
+
+    if (typeof ResizeObserver === "undefined") {
+      window.addEventListener("resize", updateSceneSize);
+
+      return () => {
+        window.removeEventListener("resize", updateSceneSize);
+      };
+    }
+
+    const observer = new ResizeObserver(updateSceneSize);
+    observer.observe(node);
+
+    return () => {
+      observer.disconnect();
     };
   }, [isImmersive]);
 
@@ -242,6 +279,20 @@ export default function VirtualTour({ selectedAnimal, currentRoom, currentRoomId
   const sliderId = `tour-angle-slider-${selectedAnimal.id}-${roomForAnimal.id}`;
   const sliderValue = Math.round(normalizeAngle(viewAngle));
   const sliderProgress = (sliderValue / 359) * 100;
+  const sceneImage = getSceneImage(roomForAnimal);
+  const panoramaScale = isImmersive ? IMMERSIVE_PANORAMA_SCALE : STANDARD_PANORAMA_SCALE;
+  const panoramaHeight = sceneSize.height * panoramaScale;
+  const panoramaWidth = Math.max(sceneSize.width, panoramaHeight * PANORAMA_ASPECT_RATIO);
+  const panoramaOffsetX = -(panoramaWidth - sceneSize.width) * getPanoramaProgress(viewAngle);
+  const panoramaOffsetY = (sceneSize.height - panoramaHeight) / 2;
+  const panoramaTrackStyle =
+    sceneSize.width > 0 && sceneSize.height > 0
+      ? {
+          width: `${panoramaWidth}px`,
+          height: `${panoramaHeight}px`,
+          transform: `translate3d(${panoramaOffsetX}px, ${panoramaOffsetY}px, 0)`,
+        }
+      : undefined;
 
   return (
     <section id="obhliadka" className="scroll-mt-16 bg-linen/74 py-20 sm:py-24">
@@ -292,29 +343,66 @@ export default function VirtualTour({ selectedAnimal, currentRoom, currentRoomId
             >
               <div className="tour-layout">
                 <div
+                  ref={sceneRef}
                   className={`tour-scene relative min-h-[520px] overflow-hidden select-none sm:min-h-[610px] ${
                     isImmersive ? "tour-scene--immersive" : ""
                   }`}
                 >
-                  <motion.div
-                    key={`${roomForAnimal.id}-${selectedAnimal.id}`}
-                    className="scene-panorama absolute inset-0"
-                    data-direction={direction}
-                    initial={{ scale: 1.04, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{ duration: 0.55, ease: "easeOut" }}
-                    style={{
-                      backgroundImage: getSceneBackground(roomForAnimal),
-                      backgroundPosition: `${getPanoramaPosition(viewAngle)}% center`,
-                      backgroundRepeat: "no-repeat",
-                      backgroundSize: roomForAnimal.scene.panoramaUrl
-                        ? isImmersive
-                          ? "auto 154%"
-                          : "auto 112%"
-                        : "cover",
-                    }}
-                  />
-                  <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(32,31,28,0.28)_0%,rgba(32,31,28,0.12)_38%,rgba(32,31,28,0.56)_100%)]" />
+                  <div className="panorama-viewport absolute inset-0">
+                    <motion.div
+                      key={`${roomForAnimal.id}-${selectedAnimal.id}`}
+                      className="panorama-track absolute"
+                      data-panorama-track
+                      data-room-id={roomForAnimal.id}
+                      data-animal-id={selectedAnimal.id}
+                      data-view-angle={sliderValue}
+                      data-dragging={isSliderDragging ? "true" : "false"}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ duration: 0.42, ease: "easeOut" }}
+                      style={panoramaTrackStyle}
+                    >
+                      {sceneImage ? (
+                        <img
+                          src={sceneImage}
+                          alt=""
+                          draggable="false"
+                          className="panorama-image absolute inset-0 h-full w-full select-none"
+                        />
+                      ) : (
+                        <div
+                          className="absolute inset-0"
+                          style={{ background: roomForAnimal.scene.fallback }}
+                        />
+                      )}
+
+                      <AnimatePresence>
+                        {anchoredAnnotations.map(({ annotation, index, position }) => (
+                          <Annotation
+                            key={annotation.id}
+                            annotation={annotation}
+                            index={index}
+                            position={position}
+                            animalAccent={selectedAnimal.accent}
+                            isActive={activeAnnotation?.id === annotation.id}
+                            onClick={() => selectAnnotation(annotation)}
+                          />
+                        ))}
+                      </AnimatePresence>
+
+                      <AnimatePresence>
+                        {anchoredNavigationHotspots.map(({ hotspot, position }) => (
+                          <NavigationHotspot
+                            key={hotspot.id}
+                            hotspot={hotspot}
+                            position={position}
+                            onNavigate={moveTo}
+                          />
+                        ))}
+                      </AnimatePresence>
+                    </motion.div>
+                  </div>
+                  <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(32,31,28,0.28)_0%,rgba(32,31,28,0.12)_38%,rgba(32,31,28,0.56)_100%)]" />
                   <div className="absolute inset-x-0 top-0 z-10 flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between sm:p-6">
                     <div className="max-w-full rounded-3xl border border-white/18 bg-charcoal/64 px-4 py-3 text-ivory shadow-[0_12px_34px_rgba(0,0,0,0.18)] backdrop-blur">
                       <div className="flex flex-wrap items-center gap-2 text-xs font-semibold uppercase text-ivory/68">
@@ -359,30 +447,43 @@ export default function VirtualTour({ selectedAnimal, currentRoom, currentRoomId
                     </div>
                   </div>
 
-                  <AnimatePresence>
-                    {projectedAnnotations.map(({ annotation, index, position }) => (
-                      <Annotation
-                        key={annotation.id}
-                        annotation={annotation}
-                        index={index}
-                        position={position}
-                        animalAccent={selectedAnimal.accent}
-                        isActive={activeAnnotation?.id === annotation.id}
-                        onClick={() => selectAnnotation(annotation)}
-                      />
-                    ))}
-                  </AnimatePresence>
-
-                  <AnimatePresence>
-                    {projectedNavigationHotspots.map(({ hotspot, position }) => (
-                      <NavigationHotspot
-                        key={hotspot.id}
-                        hotspot={hotspot}
-                        position={position}
-                        onNavigate={moveTo}
-                      />
-                    ))}
-                  </AnimatePresence>
+                  {isImmersive && activeAnnotation && (
+                    <div
+                      className="absolute bottom-32 left-4 right-4 z-30 rounded-3xl border border-white/18 bg-charcoal/76 p-4 text-ivory shadow-[0_20px_55px_rgba(0,0,0,0.28)] backdrop-blur sm:left-6 sm:right-auto sm:max-w-xl"
+                      onPointerDown={(event) => event.stopPropagation()}
+                    >
+                      <div className="flex items-center justify-between gap-3">
+                        <p className="flex items-center gap-2 text-xs font-semibold uppercase text-mustard">
+                          <span className="h-2 w-2 rounded-full bg-mustard" />
+                          Aktívna anotácia {activeAnnotationIndex + 1}/{allAnnotations.length}
+                        </p>
+                        <div className="flex gap-2">
+                          <button
+                            type="button"
+                            onClick={() => cycleAnnotation(-1)}
+                            className="grid h-8 w-8 place-items-center rounded-full border border-ivory/18 text-ivory/76 transition hover:border-mustard hover:bg-mustard hover:text-charcoal"
+                            aria-label="Predchádzajúca anotácia"
+                          >
+                            <ChevronLeft className="h-4 w-4" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => cycleAnnotation(1)}
+                            className="grid h-8 w-8 place-items-center rounded-full border border-ivory/18 text-ivory/76 transition hover:border-mustard hover:bg-mustard hover:text-charcoal"
+                            aria-label="Ďalšia anotácia"
+                          >
+                            <ChevronRight className="h-4 w-4" />
+                          </button>
+                        </div>
+                      </div>
+                      <h3 className="mt-2 font-serif text-2xl leading-tight">
+                        {activeAnnotation.title}
+                      </h3>
+                      <p className="mt-2 text-sm leading-6 text-ivory/72">
+                        {activeAnnotation.detail}
+                      </p>
+                    </div>
+                  )}
 
                   <div
                     className={`absolute inset-x-4 z-40 rounded-3xl border border-white/18 bg-charcoal/74 p-4 text-ivory shadow-[0_20px_55px_rgba(0,0,0,0.28)] backdrop-blur sm:inset-x-6 ${
@@ -426,7 +527,7 @@ export default function VirtualTour({ selectedAnimal, currentRoom, currentRoomId
                   {selectedAnimal.id === "fish" && (
                     <div
                       className={`absolute left-5 right-5 z-20 rounded-3xl border border-white/18 bg-charcoal/70 p-4 text-ivory shadow-[0_20px_55px_rgba(0,0,0,0.26)] backdrop-blur sm:left-auto sm:max-w-sm ${
-                        isImmersive ? "bottom-32" : "bottom-28"
+                        isImmersive ? "bottom-32 hidden sm:block" : "bottom-28"
                       }`}
                     >
                       <div className="flex items-start gap-3">
@@ -454,12 +555,7 @@ export default function VirtualTour({ selectedAnimal, currentRoom, currentRoomId
                           Aktívna anotácia
                         </p>
                         <span className="rounded-full border border-ivory/16 px-2.5 py-1 text-xs text-ivory/58">
-                          {Math.max(
-                            allAnnotations.findIndex(
-                              (annotation) => annotation.id === activeAnnotation?.id
-                            ),
-                            0
-                          ) + 1}
+                          {activeAnnotationIndex + 1}
                           /{allAnnotations.length}
                         </span>
                       </div>
