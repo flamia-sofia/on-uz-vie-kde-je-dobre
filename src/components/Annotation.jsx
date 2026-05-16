@@ -1,6 +1,13 @@
 import { motion } from "framer-motion";
 
-export default function Annotation({ annotation, index, isActive, animalAccent, onClick }) {
+export default function Annotation({
+  annotation,
+  index,
+  isActive,
+  animalAccent,
+  position,
+  onClick,
+}) {
   function handleClick(event) {
     event.stopPropagation();
     onClick();
@@ -17,7 +24,7 @@ export default function Annotation({ annotation, index, isActive, animalAccent, 
       onClick={handleClick}
       aria-label={`Hotspot anotácie ${annotation.title}`}
       className="absolute z-20 flex -translate-x-1/2 -translate-y-1/2 items-center gap-2 text-left"
-      style={{ left: `${annotation.x}%`, top: `${annotation.y}%` }}
+      style={{ left: `${position.x}%`, top: `${position.y}%` }}
     >
       <span
         className={`grid h-9 w-9 shrink-0 place-items-center rounded-full border-2 border-white text-sm font-bold shadow-[0_14px_28px_rgba(0,0,0,0.22)] ${

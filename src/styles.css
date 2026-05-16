@@ -43,8 +43,8 @@ a:focus-visible {
 .scene-panorama {
   background-position: center;
   background-size: cover;
-  transition: opacity 520ms ease, transform 520ms ease;
-  will-change: background-position;
+  transition: opacity 520ms ease, transform 520ms ease, background-size 360ms ease;
+  will-change: background-position, background-size;
 }
 
 .scene-panorama[data-direction="90"] {
@@ -88,7 +88,7 @@ a:focus-visible {
 }
 
 .tour-scene--immersive .scene-panorama {
-  background-size: auto 100% !important;
+  background-size: auto 154% !important;
 }
 
 .tour-angle-slider {

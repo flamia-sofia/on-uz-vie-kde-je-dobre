@@ -48,6 +48,11 @@ function clamp(value, min, max) {
   return Math.min(Math.max(value, min), max);
 }
 
+const ANCHOR_AUTHORING_FOV = 90;
+const STANDARD_SCENE_FOV = 92;
+const IMMERSIVE_SCENE_FOV = 68;
+const HOTSPOT_EDGE_BUFFER = 10;
+
 function getNearestDirection(angle) {
   const normalizedAngle = normalizeAngle(angle);
   const index = Math.round(normalizedAngle / 90) % directions.length;
@@ -59,7 +64,29 @@ function getPanoramaPosition(angle) {
   return 50 + (normalizeAngle(angle) / 360) * 100;
 }
 
-function NavigationHotspot({ hotspot, onNavigate }) {
+function getSignedAngleDelta(targetAngle, viewAngle) {
+  return normalizeAngle(targetAngle - viewAngle + 180) - 180;
+}
+
+function getSceneAnchorBearing(point) {
+  const directionAngle = point.direction ?? 0;
+  const localOffset = ((point.x ?? 50) - 50) * (ANCHOR_AUTHORING_FOV / 100);
+
+  return normalizeAngle(directionAngle + localOffset);
+}
+
+function getProjectedScenePosition(point, viewAngle, fieldOfView) {
+  const delta = getSignedAngleDelta(getSceneAnchorBearing(point), viewAngle);
+  const x = 50 + (delta / fieldOfView) * 100;
+
+  return {
+    x,
+    y: point.y,
+    isVisible: x >= -HOTSPOT_EDGE_BUFFER && x <= 100 + HOTSPOT_EDGE_BUFFER,
+  };
+}
+
+function NavigationHotspot({ hotspot, position, onNavigate }) {
   function handleNavigate(event) {
     event.stopPropagation();
     onNavigate(hotspot.targetRoomId, hotspot.arrivalAngle);
@@ -76,7 +103,7 @@ function NavigationHotspot({ hotspot, onNavigate }) {
       onClick={handleNavigate}
       aria-label={hotspot.label}
       className="absolute z-30 flex -translate-x-1/2 -translate-y-1/2 items-center gap-2 rounded-full border border-ivory/50 bg-charcoal/72 px-3 py-2 text-xs font-semibold text-ivory shadow-[0_16px_36px_rgba(0,0,0,0.28)] backdrop-blur transition hover:border-mustard hover:bg-mustard hover:text-charcoal sm:px-4 sm:text-sm"
-      style={{ left: `${hotspot.x}%`, top: `${hotspot.y}%` }}
+      style={{ left: `${position.x}%`, top: `${position.y}%` }}
     >
       <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-ivory/14">
         <DoorOpen className="h-4 w-4" />
@@ -97,6 +124,7 @@ export default function VirtualTour({ selectedAnimal, currentRoom, currentRoomId
   const roomForAnimal = selectedAnimal.id === "fish" ? getRoomById(defaultRoomId) : currentRoom;
   const connectedRooms = roomForAnimal.connectedTo;
   const direction = useMemo(() => getNearestDirection(viewAngle), [viewAngle]);
+  const sceneFieldOfView = isImmersive ? IMMERSIVE_SCENE_FOV : STANDARD_SCENE_FOV;
   const navigationHotspots = useMemo(() => {
     if (!canMove) return [];
     return roomNavigationHotspots[roomForAnimal.id] ?? [];
@@ -107,11 +135,31 @@ export default function VirtualTour({ selectedAnimal, currentRoom, currentRoomId
     return getAnnotations(selectedAnimal.id, roomId);
   }, [roomForAnimal.id, selectedAnimal.id]);
 
-  const visibleAnnotations = allAnnotations;
+  const projectedAnnotations = useMemo(
+    () =>
+      allAnnotations
+        .map((annotation, index) => ({
+          annotation,
+          index,
+          position: getProjectedScenePosition(annotation, viewAngle, sceneFieldOfView),
+        }))
+        .filter(({ position }) => position.isVisible),
+    [allAnnotations, sceneFieldOfView, viewAngle]
+  );
+
+  const projectedNavigationHotspots = useMemo(
+    () =>
+      navigationHotspots
+        .map((hotspot) => ({
+          hotspot,
+          position: getProjectedScenePosition(hotspot, viewAngle, sceneFieldOfView),
+        }))
+        .filter(({ position }) => position.isVisible),
+    [navigationHotspots, sceneFieldOfView, viewAngle]
+  );
 
   const activeAnnotation =
     allAnnotations.find((annotation) => annotation.id === activeAnnotationId) ??
-    visibleAnnotations[0] ??
     allAnnotations[0];
 
   useEffect(() => {
@@ -121,20 +169,8 @@ export default function VirtualTour({ selectedAnimal, currentRoom, currentRoomId
   }, [currentRoomId, onRoomChange, selectedAnimal.id]);
 
   useEffect(() => {
-    setActiveAnnotationId(visibleAnnotations[0]?.id ?? null);
+    setActiveAnnotationId(allAnnotations[0]?.id ?? null);
   }, [roomForAnimal.id, selectedAnimal.id]);
-
-  useEffect(() => {
-    if (selectedAnimal.id !== "fish" || !visibleAnnotations.length) return;
-
-    const activeIsVisible = visibleAnnotations.some(
-      (annotation) => annotation.id === activeAnnotationId
-    );
-
-    if (!activeIsVisible) {
-      setActiveAnnotationId(visibleAnnotations[0].id);
-    }
-  }, [activeAnnotationId, selectedAnimal.id, visibleAnnotations]);
 
   useEffect(() => {
     function handleEscape(event) {
@@ -170,8 +206,12 @@ export default function VirtualTour({ selectedAnimal, currentRoom, currentRoomId
     setViewAngle(arrivalAngle);
   }
 
-  function selectAnnotation(annotation) {
+  function selectAnnotation(annotation, options = {}) {
     setActiveAnnotationId(annotation.id);
+
+    if (options.focus) {
+      setViewAngle(getSceneAnchorBearing(annotation));
+    }
   }
 
   function cycleAnnotation(step) {
@@ -182,7 +222,7 @@ export default function VirtualTour({ selectedAnimal, currentRoom, currentRoomId
       0
     );
     const nextIndex = (activeIndex + step + allAnnotations.length) % allAnnotations.length;
-    selectAnnotation(allAnnotations[nextIndex]);
+    selectAnnotation(allAnnotations[nextIndex], { focus: true });
   }
 
   function toggleImmersive() {
@@ -303,7 +343,11 @@ export default function VirtualTour({ selectedAnimal, currentRoom, currentRoomId
                       backgroundImage: getSceneBackground(roomForAnimal),
                       backgroundPosition: `${getPanoramaPosition(viewAngle)}% center`,
                       backgroundRepeat: roomForAnimal.scene.panoramaUrl ? "repeat-x" : "no-repeat",
-                      backgroundSize: roomForAnimal.scene.panoramaUrl ? "auto 100%" : "cover",
+                      backgroundSize: roomForAnimal.scene.panoramaUrl
+                        ? isImmersive
+                          ? "auto 154%"
+                          : "auto 112%"
+                        : "cover",
                     }}
                   />
                   <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(32,31,28,0.28)_0%,rgba(32,31,28,0.12)_38%,rgba(32,31,28,0.56)_100%)]" />
@@ -352,11 +396,12 @@ export default function VirtualTour({ selectedAnimal, currentRoom, currentRoomId
                   </div>
 
                   <AnimatePresence>
-                    {visibleAnnotations.map((annotation, index) => (
+                    {projectedAnnotations.map(({ annotation, index, position }) => (
                       <Annotation
                         key={annotation.id}
                         annotation={annotation}
                         index={index}
+                        position={position}
                         animalAccent={selectedAnimal.accent}
                         isActive={activeAnnotation?.id === annotation.id}
                         onClick={() => selectAnnotation(annotation)}
@@ -365,10 +410,11 @@ export default function VirtualTour({ selectedAnimal, currentRoom, currentRoomId
                   </AnimatePresence>
 
                   <AnimatePresence>
-                    {navigationHotspots.map((hotspot) => (
+                    {projectedNavigationHotspots.map(({ hotspot, position }) => (
                       <NavigationHotspot
                         key={hotspot.id}
                         hotspot={hotspot}
+                        position={position}
                         onNavigate={moveTo}
                       />
                     ))}
@@ -474,7 +520,7 @@ export default function VirtualTour({ selectedAnimal, currentRoom, currentRoomId
                         <button
                           key={annotation.id}
                           type="button"
-                          onClick={() => selectAnnotation(annotation)}
+                          onClick={() => selectAnnotation(annotation, { focus: true })}
                           className={`h-9 min-w-9 rounded-full border px-3 text-sm font-semibold transition ${
                             activeAnnotation?.id === annotation.id
                               ? "border-mustard bg-mustard text-charcoal"
