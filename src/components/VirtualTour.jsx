@@ -61,7 +61,7 @@ function getNearestDirection(angle) {
 }
 
 function getPanoramaPosition(angle) {
-  return 50 + (normalizeAngle(angle) / 360) * 100;
+  return clamp(50 + (normalizeAngle(angle) / 360) * 100, 0, 100);
 }
 
 function getSignedAngleDelta(targetAngle, viewAngle) {
@@ -342,7 +342,7 @@ export default function VirtualTour({ selectedAnimal, currentRoom, currentRoomId
                     style={{
                       backgroundImage: getSceneBackground(roomForAnimal),
                       backgroundPosition: `${getPanoramaPosition(viewAngle)}% center`,
-                      backgroundRepeat: roomForAnimal.scene.panoramaUrl ? "repeat-x" : "no-repeat",
+                      backgroundRepeat: "no-repeat",
                       backgroundSize: roomForAnimal.scene.panoramaUrl
                         ? isImmersive
                           ? "auto 154%"
