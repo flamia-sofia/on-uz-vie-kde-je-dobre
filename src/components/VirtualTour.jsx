@@ -27,6 +27,10 @@ import {
 const PANORAMA_ASPECT_RATIO = 1774 / 887;
 const STANDARD_PANORAMA_SCALE = 1.12;
 const IMMERSIVE_PANORAMA_SCALE = 1.72;
+const MARKER_CLUSTER_X_THRESHOLD = 9;
+const MARKER_CLUSTER_Y_THRESHOLD = 12;
+const MARKER_STACK_GAP = 8;
+const MARKER_EDGE_PADDING = 7;
 
 function getSceneImage(room) {
   return room.scene.panoramaUrl || room.scene.imageUrl || "";
@@ -57,6 +61,46 @@ function getPanoramaPosition(angle) {
 
 function getPanoramaProgress(angle) {
   return getPanoramaPosition(angle) / 100;
+}
+
+function stackSceneMarkers(markers) {
+  const clusters = [];
+
+  markers.forEach((marker) => {
+    const cluster = clusters.find(
+      ({ anchor }) =>
+        Math.abs(marker.position.x - anchor.x) <= MARKER_CLUSTER_X_THRESHOLD &&
+        Math.abs(marker.position.y - anchor.y) <= MARKER_CLUSTER_Y_THRESHOLD
+    );
+
+    if (cluster) {
+      cluster.items.push(marker);
+      return;
+    }
+
+    clusters.push({
+      anchor: marker.position,
+      items: [marker],
+    });
+  });
+
+  return clusters.flatMap(({ anchor, items }) => {
+    if (items.length === 1) {
+      return items;
+    }
+
+    const stackHeight = (items.length - 1) * MARKER_STACK_GAP;
+    const startY = clamp(anchor.y, MARKER_EDGE_PADDING, 100 - MARKER_EDGE_PADDING - stackHeight);
+    const x = clamp(anchor.x, MARKER_EDGE_PADDING, 100 - MARKER_EDGE_PADDING);
+
+    return items.map((item, itemIndex) => ({
+      ...item,
+      position: {
+        x,
+        y: startY + itemIndex * MARKER_STACK_GAP,
+      },
+    }));
+  });
 }
 
 function NavigationHotspot({ hotspot, position, onNavigate }) {
@@ -114,23 +158,45 @@ export default function VirtualTour({ selectedAnimal, currentRoom, currentRoomId
     return getAnnotations(selectedAnimal.id, roomId);
   }, [roomForAnimal.id, selectedAnimal.id]);
 
+  const sceneMarkers = useMemo(
+    () =>
+      stackSceneMarkers([
+        ...allAnnotations.map((annotation, index) => ({
+          type: "annotation",
+          annotation,
+          index,
+          position: { x: annotation.x, y: annotation.y },
+        })),
+        ...navigationHotspots.map((hotspot) => ({
+          type: "navigation",
+          hotspot,
+          position: { x: hotspot.x, y: hotspot.y },
+        })),
+      ]),
+    [allAnnotations, navigationHotspots]
+  );
+
   const anchoredAnnotations = useMemo(
     () =>
-      allAnnotations.map((annotation, index) => ({
-        annotation,
-        index,
-        position: { x: annotation.x, y: annotation.y },
-      })),
-    [allAnnotations]
+      sceneMarkers
+        .filter((marker) => marker.type === "annotation")
+        .map(({ annotation, index, position }) => ({
+          annotation,
+          index,
+          position,
+        })),
+    [sceneMarkers]
   );
 
   const anchoredNavigationHotspots = useMemo(
     () =>
-      navigationHotspots.map((hotspot) => ({
-        hotspot,
-        position: { x: hotspot.x, y: hotspot.y },
-      })),
-    [navigationHotspots]
+      sceneMarkers
+        .filter((marker) => marker.type === "navigation")
+        .map(({ hotspot, position }) => ({
+          hotspot,
+          position,
+        })),
+    [sceneMarkers]
   );
 
   const activeAnnotation =
