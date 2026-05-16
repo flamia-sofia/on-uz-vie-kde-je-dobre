@@ -48,11 +48,6 @@ function clamp(value, min, max) {
   return Math.min(Math.max(value, min), max);
 }
 
-const ANCHOR_AUTHORING_FOV = 90;
-const STANDARD_SCENE_FOV = 92;
-const IMMERSIVE_SCENE_FOV = 68;
-const HOTSPOT_EDGE_BUFFER = 10;
-
 function getNearestDirection(angle) {
   const normalizedAngle = normalizeAngle(angle);
   const index = Math.round(normalizedAngle / 90) % directions.length;
@@ -61,29 +56,7 @@ function getNearestDirection(angle) {
 }
 
 function getPanoramaPosition(angle) {
-  return clamp(50 + (normalizeAngle(angle) / 360) * 100, 0, 100);
-}
-
-function getSignedAngleDelta(targetAngle, viewAngle) {
-  return normalizeAngle(targetAngle - viewAngle + 180) - 180;
-}
-
-function getSceneAnchorBearing(point) {
-  const directionAngle = point.direction ?? 0;
-  const localOffset = ((point.x ?? 50) - 50) * (ANCHOR_AUTHORING_FOV / 100);
-
-  return normalizeAngle(directionAngle + localOffset);
-}
-
-function getProjectedScenePosition(point, viewAngle, fieldOfView) {
-  const delta = getSignedAngleDelta(getSceneAnchorBearing(point), viewAngle);
-  const x = 50 + (delta / fieldOfView) * 100;
-
-  return {
-    x,
-    y: point.y,
-    isVisible: x >= -HOTSPOT_EDGE_BUFFER && x <= 100 + HOTSPOT_EDGE_BUFFER,
-  };
+  return clamp((normalizeAngle(angle) / 359) * 100, 0, 100);
 }
 
 function NavigationHotspot({ hotspot, position, onNavigate }) {
@@ -124,7 +97,6 @@ export default function VirtualTour({ selectedAnimal, currentRoom, currentRoomId
   const roomForAnimal = selectedAnimal.id === "fish" ? getRoomById(defaultRoomId) : currentRoom;
   const connectedRooms = roomForAnimal.connectedTo;
   const direction = useMemo(() => getNearestDirection(viewAngle), [viewAngle]);
-  const sceneFieldOfView = isImmersive ? IMMERSIVE_SCENE_FOV : STANDARD_SCENE_FOV;
   const navigationHotspots = useMemo(() => {
     if (!canMove) return [];
     return roomNavigationHotspots[roomForAnimal.id] ?? [];
@@ -137,25 +109,21 @@ export default function VirtualTour({ selectedAnimal, currentRoom, currentRoomId
 
   const projectedAnnotations = useMemo(
     () =>
-      allAnnotations
-        .map((annotation, index) => ({
-          annotation,
-          index,
-          position: getProjectedScenePosition(annotation, viewAngle, sceneFieldOfView),
-        }))
-        .filter(({ position }) => position.isVisible),
-    [allAnnotations, sceneFieldOfView, viewAngle]
+      allAnnotations.map((annotation, index) => ({
+        annotation,
+        index,
+        position: { x: annotation.x, y: annotation.y },
+      })),
+    [allAnnotations]
   );
 
   const projectedNavigationHotspots = useMemo(
     () =>
-      navigationHotspots
-        .map((hotspot) => ({
-          hotspot,
-          position: getProjectedScenePosition(hotspot, viewAngle, sceneFieldOfView),
-        }))
-        .filter(({ position }) => position.isVisible),
-    [navigationHotspots, sceneFieldOfView, viewAngle]
+      navigationHotspots.map((hotspot) => ({
+        hotspot,
+        position: { x: hotspot.x, y: hotspot.y },
+      })),
+    [navigationHotspots]
   );
 
   const activeAnnotation =
@@ -206,12 +174,8 @@ export default function VirtualTour({ selectedAnimal, currentRoom, currentRoomId
     setViewAngle(arrivalAngle);
   }
 
-  function selectAnnotation(annotation, options = {}) {
+  function selectAnnotation(annotation) {
     setActiveAnnotationId(annotation.id);
-
-    if (options.focus) {
-      setViewAngle(getSceneAnchorBearing(annotation));
-    }
   }
 
   function cycleAnnotation(step) {
@@ -222,7 +186,7 @@ export default function VirtualTour({ selectedAnimal, currentRoom, currentRoomId
       0
     );
     const nextIndex = (activeIndex + step + allAnnotations.length) % allAnnotations.length;
-    selectAnnotation(allAnnotations[nextIndex], { focus: true });
+    selectAnnotation(allAnnotations[nextIndex]);
   }
 
   function toggleImmersive() {
@@ -520,7 +484,7 @@ export default function VirtualTour({ selectedAnimal, currentRoom, currentRoomId
                         <button
                           key={annotation.id}
                           type="button"
-                          onClick={() => selectAnnotation(annotation, { focus: true })}
+                          onClick={() => selectAnnotation(annotation)}
                           className={`h-9 min-w-9 rounded-full border px-3 text-sm font-semibold transition ${
                             activeAnnotation?.id === annotation.id
                               ? "border-mustard bg-mustard text-charcoal"
