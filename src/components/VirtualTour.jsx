@@ -60,6 +60,8 @@ function getPanoramaProgress(angle) {
 }
 
 function NavigationHotspot({ hotspot, position, onNavigate }) {
+  const shouldOpenLeft = position.x >= 55;
+
   function handleNavigate(event) {
     event.stopPropagation();
     onNavigate(hotspot.targetRoomId, hotspot.arrivalAngle);
@@ -76,7 +78,9 @@ function NavigationHotspot({ hotspot, position, onNavigate }) {
       onClick={handleNavigate}
       aria-label={hotspot.label}
       data-navigation-hotspot-id={hotspot.id}
-      className="absolute z-30 flex -translate-x-1/2 -translate-y-1/2 items-center gap-2 rounded-full border border-ivory/50 bg-charcoal/72 px-3 py-2 text-xs font-semibold text-ivory shadow-[0_16px_36px_rgba(0,0,0,0.28)] backdrop-blur transition hover:border-mustard hover:bg-mustard hover:text-charcoal sm:px-4 sm:text-sm"
+      className={`absolute z-30 flex -translate-x-1/2 -translate-y-1/2 items-center gap-2 rounded-full border border-ivory/50 bg-charcoal/72 px-3 py-2 text-xs font-semibold text-ivory shadow-[0_16px_36px_rgba(0,0,0,0.28)] backdrop-blur transition hover:border-mustard hover:bg-mustard hover:text-charcoal sm:px-4 sm:text-sm ${
+        shouldOpenLeft ? "flex-row-reverse" : ""
+      }`}
       style={{ left: `${position.x}%`, top: `${position.y}%` }}
     >
       <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-ivory/14">

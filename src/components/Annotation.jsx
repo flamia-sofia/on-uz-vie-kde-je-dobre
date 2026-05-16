@@ -8,6 +8,8 @@ export default function Annotation({
   position,
   onClick,
 }) {
+  const shouldOpenLeft = position.x >= 55;
+
   function handleClick(event) {
     event.stopPropagation();
     onClick();
@@ -24,7 +26,9 @@ export default function Annotation({
       onClick={handleClick}
       data-annotation-id={annotation.id}
       aria-label={`Hotspot anotácie ${annotation.title}`}
-      className="absolute z-20 flex -translate-x-1/2 -translate-y-1/2 items-center gap-2 text-left"
+      className={`absolute z-20 flex -translate-x-1/2 -translate-y-1/2 items-center gap-2 ${
+        shouldOpenLeft ? "flex-row-reverse text-right" : "text-left"
+      }`}
       style={{ left: `${position.x}%`, top: `${position.y}%` }}
     >
       <span
