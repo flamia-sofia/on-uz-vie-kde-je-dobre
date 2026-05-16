@@ -8,11 +8,11 @@ export default function CTASection() {
           <div className="p-7 sm:p-10 lg:p-14">
             <p className="text-sm font-semibold uppercase text-mustard">Arvin &amp; Benet</p>
             <h2 className="mt-4 max-w-2xl font-serif text-4xl leading-tight sm:text-5xl">
-              Pozrite si byt očami svojimi. Zvierací audit už prebehol.
+              Objavte byt, kde sa dobre býva celej domácnosti.
             </h2>
             <p className="mt-5 max-w-2xl text-base leading-7 text-ivory/72 sm:text-lg">
-              Interaktívny prototyp ukáže princíp kampane. Reálnu obhliadku, presné zábery a dáta
-              vieme napojiť bez zmeny príbehu.
+              Prejdite si svetlý interiér, terasu aj praktické detaily v interaktívnej obhliadke.
+              Keď vám miesto sadne, radi vás ním prevedieme aj osobne.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <a
@@ -42,10 +42,10 @@ export default function CTASection() {
             <div className="absolute bottom-6 left-6 right-6 rounded-3xl border border-white/18 bg-charcoal/58 p-5 backdrop-blur">
               <p className="flex items-center gap-2 text-sm font-semibold text-mustard">
                 <Calendar className="h-4 w-4" />
-                Ďalší krok
+                Osobná obhliadka
               </p>
               <p className="mt-2 font-serif text-2xl leading-tight">
-                Interaktívna obhliadka je pripravená na nasadenie.
+                Dohodnite si termín a zažite atmosféru bytu naživo.
               </p>
             </div>
           </div>

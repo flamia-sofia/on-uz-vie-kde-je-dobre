@@ -20,7 +20,7 @@ export default function Footer() {
         <div className="flex flex-col gap-2 text-sm text-graphite/70 sm:items-end">
           <p className="flex items-center gap-2">
             <Building2 className="h-4 w-4 text-mustard" />
-            Interaktívny prototyp kampane
+            Interaktívna obhliadka bytu
           </p>
           <p className="flex items-center gap-2">
             <Mail className="h-4 w-4 text-mustard" />
