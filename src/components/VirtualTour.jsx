@@ -473,16 +473,32 @@ export default function VirtualTour({ selectedAnimal, currentRoom, currentRoomId
                     </motion.div>
                   </div>
                   <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(32,31,28,0.28)_0%,rgba(32,31,28,0.12)_38%,rgba(32,31,28,0.56)_100%)]" />
-                  <div className="absolute inset-x-0 top-0 z-10 flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between sm:p-6">
-                    <div className="max-w-full rounded-3xl border border-white/18 bg-charcoal/64 px-4 py-3 text-ivory shadow-[0_12px_34px_rgba(0,0,0,0.18)] backdrop-blur">
+                  <div
+                    className={`absolute inset-x-0 top-0 z-10 flex flex-col gap-3 p-4 sm:flex-row sm:justify-between ${
+                      isImmersive ? "sm:items-start sm:p-4" : "sm:items-center sm:p-6"
+                    }`}
+                  >
+                    <div
+                      className={`max-w-full border border-white/18 bg-charcoal/64 text-ivory shadow-[0_12px_34px_rgba(0,0,0,0.18)] backdrop-blur ${
+                        isImmersive
+                          ? "rounded-2xl px-3 py-2 sm:max-w-md"
+                          : "rounded-3xl px-4 py-3"
+                      }`}
+                    >
                       <div className="flex flex-wrap items-center gap-2 text-xs font-semibold uppercase text-ivory/68">
                         <MapPin className="h-4 w-4 text-mustard" />
                         <span>{roomForAnimal.title}</span>
                         <span className="h-1 w-1 rounded-full bg-ivory/42" />
                         <span>{roomForAnimal.scene.label}</span>
                       </div>
-                      <p className="mt-1 max-w-xl font-serif text-2xl leading-tight text-ivory">
-                        {selectedAnimal.label} práve hodnotí detail, ktorý by maklér možno obišiel.
+                      <p
+                        className={`mt-1 font-serif leading-tight text-ivory ${
+                          isImmersive ? "max-w-sm truncate text-base" : "max-w-xl text-2xl"
+                        }`}
+                      >
+                        {isImmersive && activeAnnotation
+                          ? activeAnnotation.title
+                          : `${selectedAnimal.label} práve hodnotí detail, ktorý by maklér možno obišiel.`}
                       </p>
                     </div>
 
@@ -517,47 +533,11 @@ export default function VirtualTour({ selectedAnimal, currentRoom, currentRoomId
                     </div>
                   </div>
 
-                  {isImmersive && activeAnnotation && (
-                    <div
-                      className="absolute bottom-32 left-4 right-4 z-30 rounded-3xl border border-white/18 bg-charcoal/76 p-4 text-ivory shadow-[0_20px_55px_rgba(0,0,0,0.28)] backdrop-blur sm:left-6 sm:right-auto sm:max-w-xl"
-                      onPointerDown={(event) => event.stopPropagation()}
-                    >
-                      <div className="flex items-center justify-between gap-3">
-                        <p className="flex items-center gap-2 text-xs font-semibold uppercase text-mustard">
-                          <span className="h-2 w-2 rounded-full bg-mustard" />
-                          Aktívna anotácia {activeAnnotationIndex + 1}/{allAnnotations.length}
-                        </p>
-                        <div className="flex gap-2">
-                          <button
-                            type="button"
-                            onClick={() => cycleAnnotation(-1)}
-                            className="grid h-8 w-8 place-items-center rounded-full border border-ivory/18 text-ivory/76 transition hover:border-mustard hover:bg-mustard hover:text-charcoal"
-                            aria-label="Predchádzajúca anotácia"
-                          >
-                            <ChevronLeft className="h-4 w-4" />
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => cycleAnnotation(1)}
-                            className="grid h-8 w-8 place-items-center rounded-full border border-ivory/18 text-ivory/76 transition hover:border-mustard hover:bg-mustard hover:text-charcoal"
-                            aria-label="Ďalšia anotácia"
-                          >
-                            <ChevronRight className="h-4 w-4" />
-                          </button>
-                        </div>
-                      </div>
-                      <h3 className="mt-2 font-serif text-2xl leading-tight">
-                        {activeAnnotation.title}
-                      </h3>
-                      <p className="mt-2 text-sm leading-6 text-ivory/72">
-                        {activeAnnotation.detail}
-                      </p>
-                    </div>
-                  )}
-
                   <div
-                    className={`absolute inset-x-4 z-40 rounded-3xl border border-white/18 bg-charcoal/74 p-4 text-ivory shadow-[0_20px_55px_rgba(0,0,0,0.28)] backdrop-blur sm:inset-x-6 ${
-                      isImmersive ? "bottom-6" : "bottom-4"
+                    className={`absolute z-40 border border-white/18 bg-charcoal/74 text-ivory shadow-[0_20px_55px_rgba(0,0,0,0.28)] backdrop-blur ${
+                      isImmersive
+                        ? "bottom-4 left-1/2 w-[calc(100vw-2rem)] max-w-md -translate-x-1/2 rounded-2xl p-3"
+                        : "inset-x-4 bottom-4 rounded-3xl p-4 sm:inset-x-6"
                     }`}
                     onPointerDown={(event) => event.stopPropagation()}
                   >
@@ -587,18 +567,16 @@ export default function VirtualTour({ selectedAnimal, currentRoom, currentRoomId
                       onPointerUp={handleSliderPointerUp}
                       onPointerCancel={handleSliderPointerUp}
                       onKeyDown={handleSliderKeyDown}
-                      className="tour-angle-slider mt-3 w-full"
+                      className={`tour-angle-slider w-full ${isImmersive ? "mt-2" : "mt-3"}`}
                     >
                       <span className="tour-angle-slider__fill" style={{ width: `${sliderProgress}%` }} />
                       <span className="tour-angle-slider__thumb" style={{ left: `${sliderProgress}%` }} />
                     </div>
                   </div>
 
-                  {selectedAnimal.id === "fish" && (
+                  {selectedAnimal.id === "fish" && !isImmersive && (
                     <div
-                      className={`absolute left-5 right-5 z-20 rounded-3xl border border-white/18 bg-charcoal/70 p-4 text-ivory shadow-[0_20px_55px_rgba(0,0,0,0.26)] backdrop-blur sm:left-auto sm:max-w-sm ${
-                        isImmersive ? "bottom-32 hidden sm:block" : "bottom-28"
-                      }`}
+                      className="absolute bottom-28 left-5 right-5 z-20 rounded-3xl border border-white/18 bg-charcoal/70 p-4 text-ivory shadow-[0_20px_55px_rgba(0,0,0,0.26)] backdrop-blur sm:left-auto sm:max-w-sm"
                     >
                       <div className="flex items-start gap-3">
                         <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-[#6F91A5] text-white">
