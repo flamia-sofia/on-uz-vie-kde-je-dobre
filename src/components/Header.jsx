@@ -14,14 +14,13 @@ export default function Header() {
   return (
     <header className="fixed inset-x-0 top-0 z-50 border-b border-white/18 bg-charcoal/70 text-ivory shadow-[0_12px_35px_rgba(0,0,0,0.18)] backdrop-blur-xl">
       <div className="premium-container flex h-16 items-center justify-between gap-4">
-        <a href="#top" className="group flex items-center gap-3" aria-label="Arvin & Benet domov">
-          <span className="grid h-9 w-9 place-items-center rounded-full border border-mustard/50 bg-ivory/10 font-serif text-lg text-mustard shadow-insetWarm">
-            A
-          </span>
-          <span className="leading-none">
-            <span className="block font-serif text-lg">Arvin &amp; Benet</span>
-            <span className="block text-[11px] uppercase text-ivory/62">premium real estate</span>
-          </span>
+        <a href="#top" className="group flex min-w-0 items-center" aria-label="Arvin & Benet domov">
+          <img
+            src="brand/arvin-benet-logo-small.svg"
+            alt=""
+            aria-hidden="true"
+            className="h-8 w-auto max-w-[148px] object-contain transition group-hover:opacity-90 sm:h-9 sm:max-w-[176px]"
+          />
         </a>
 
         <nav className="hidden items-center gap-7 text-sm text-ivory/78 md:flex" aria-label="Hlavná navigácia">

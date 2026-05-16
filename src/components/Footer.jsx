@@ -4,14 +4,17 @@ export default function Footer() {
   return (
     <footer className="bg-ivory py-10 text-charcoal">
       <div className="premium-container flex flex-col gap-6 border-t border-charcoal/10 pt-8 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-3">
-          <span className="grid h-10 w-10 place-items-center rounded-full bg-charcoal font-serif text-lg text-mustard">
-            A
-          </span>
-          <div>
-            <p className="font-serif text-xl">Arvin &amp; Benet</p>
-            <p className="text-sm text-graphite/62">On už vie, kde je dobre.</p>
+        <div className="flex flex-col items-start gap-3">
+          <div className="inline-flex rounded bg-charcoal px-4 py-3 shadow-[0_10px_24px_rgba(32,31,28,0.12)]">
+            <img
+              src="brand/arvin-benet-logo-small.svg"
+              alt="Arvin & Benet"
+              className="h-8 w-auto max-w-[168px] object-contain"
+              loading="lazy"
+              decoding="async"
+            />
           </div>
+          <p className="text-sm text-graphite/62">On už vie, kde je dobre.</p>
         </div>
 
         <div className="flex flex-col gap-2 text-sm text-graphite/70 sm:items-end">
